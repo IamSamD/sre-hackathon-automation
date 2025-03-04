@@ -30,8 +30,6 @@ resource "aws_cloudwatch_log_metric_filter" "automation" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "automation" {
-  depends_on = [aws_lambda_permission.allow_cloudwatch_invokation]
-
   alarm_name          = "automation-api-errors"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = 1

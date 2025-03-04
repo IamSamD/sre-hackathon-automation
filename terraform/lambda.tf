@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" {}
+
 data "archive_file" "lambda_package" {
   type        = "zip"
   source_dir  = "../selfheal_lambda/"
@@ -62,17 +64,17 @@ resource "aws_iam_policy" "automation_selfheal_lambda" {
           "ecs:ListClusters"
         ],
         Resource = [
-          "arn:aws:ecs:*:392568538879:service/*/*",
-          "arn:aws:ecs:*:392568538879:cluster/*",
-          "arn:aws:ecs:*:392568538879:service-deployment/*/*/*",
-          "arn:aws:ecs:*:392568538879:container-instance/*/*",
-          "arn:aws:ecs:*:392568538879:task-set/*/*/*",
-          "arn:aws:ecs:*:392568538879:service-revision/*/*/*",
-          "arn:aws:ecs:*:392568538879:task-definition/*:*",
-          "arn:aws:ecs:*:392568538879:capacity-provider/*",
-          "arn:aws:ecs:*:392568538879:task/*/*",
-          "arn:aws:logs:*:392568538879:log-group:*:log-stream:*",
-          "arn:aws:logs:*:392568538879:log-group:*"
+          "arn:aws:ecs:*:${data.aws_caller_identity.current.account_id}:service/*/*",
+          "arn:aws:ecs:*:${data.aws_caller_identity.current.account_id}:cluster/*",
+          "arn:aws:ecs:*:${data.aws_caller_identity.current.account_id}:service-deployment/*/*/*",
+          "arn:aws:ecs:*:${data.aws_caller_identity.current.account_id}:container-instance/*/*",
+          "arn:aws:ecs:*:${data.aws_caller_identity.current.account_id}:task-set/*/*/*",
+          "arn:aws:ecs:*:${data.aws_caller_identity.current.account_id}:service-revision/*/*/*",
+          "arn:aws:ecs:*:${data.aws_caller_identity.current.account_id}:task-definition/*:*",
+          "arn:aws:ecs:*:${data.aws_caller_identity.current.account_id}:capacity-provider/*",
+          "arn:aws:ecs:*:${data.aws_caller_identity.current.account_id}:task/*/*",
+          "arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:*:log-stream:*",
+          "arn:aws:logs:*:${data.aws_caller_identity.current.account_id}:log-group:*"
         ]
       }
     ]
@@ -91,7 +93,7 @@ resource "aws_lambda_permission" "allow_cloudwatch_invokation" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.automation_selfheal_lambda.function_name
   principal     = "lambda.alarms.cloudwatch.amazonaws.com"
-  source_arn    = "arn:aws:cloudwatch:eu-west-2:392568538879:alarm:automation-api-errors"
+  source_arn    = aws_cloudwatch_metric_alarm.automation.arn
 }
 
 resource "aws_lambda_function" "automation_selfheal_lambda" {
