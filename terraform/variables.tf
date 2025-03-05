@@ -1,6 +1,6 @@
 variable "aws_region" {
   type    = string
-  default = "eu-west-2" // London
+  default = "eu-west-1" // Ireland
 }
 
 variable "default_tags" {
